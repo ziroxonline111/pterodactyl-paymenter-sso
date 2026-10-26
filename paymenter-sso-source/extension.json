@@ -1,0 +1,23 @@
+{
+    "$schema": "../sdk/manifest.schema.json",
+    "id": "paymenter-sso",
+    "name": "Sign in with Paymenter",
+    "version": "1.0.0",
+    "description": "Adds a \"Sign in with Paymenter\" button to the login page: customers sign in to the panel with their Paymenter account.",
+    "author": "Karelia Labs",
+    "icon": "log-in",
+    "requires": {
+        "panel": "^2.0.0-beta.1 || ^2.0",
+        "sdk": ">=2.0.0-beta.5 <3.0",
+        "php": "^8.3"
+    },
+    "provider": "KareliaLabs\\PaymenterSso\\PaymenterSsoProvider",
+    "autoload": {
+        "KareliaLabs\\PaymenterSso\\": "src"
+    },
+    "ui": {
+        "entry": "dist/client.js",
+        "mode": "native",
+        "prefix": "pmsso"
+    }
+}

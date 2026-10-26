@@ -1,0 +1,5 @@
+/* Tailwind with this extension's prefix (ui.prefix "pmsso" in extension.json), so nothing collides with the panel. */
+@import 'tailwindcss/theme.css' layer(theme) prefix(pmsso);
+@import 'tailwindcss/utilities.css' layer(utilities) prefix(pmsso);
+@import '../../sdk/theme.css';
+@source './**/*.{ts,tsx}';

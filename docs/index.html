@@ -1,0 +1,200 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Sign in with Paymenter for Pterodactyl 2.0: free SSO with OAuth 2.0</title>
+<meta name="description" content="Free Pterodactyl 2.0 extension: a Sign in with Paymenter button on the panel login page. OAuth 2.0 with PKCE against Paymenter's built-in OAuth server, verified-email matching, two-factor kept, admins protected.">
+<link rel="canonical" href="https://ziroxonline111.github.io/pterodactyl-paymenter-sso/">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://ziroxonline111.github.io/pterodactyl-paymenter-sso/">
+<meta property="og:title" content="Sign in with Paymenter for Pterodactyl 2.0">
+<meta property="og:description" content="Customers sign in to your Pterodactyl 2.0 panel with their Paymenter account. Free and open source (MIT).">
+<meta property="og:image" content="https://ziroxonline111.github.io/pterodactyl-paymenter-sso/social.png">
+<meta property="og:image:width" content="1280">
+<meta property="og:image:height" content="640">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Sign in with Paymenter for Pterodactyl 2.0">
+<meta name="twitter:description" content="Customers sign in to your Pterodactyl 2.0 panel with their Paymenter account. Free and open source (MIT).">
+<meta name="twitter:image" content="https://ziroxonline111.github.io/pterodactyl-paymenter-sso/social.png">
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "SoftwareApplication",
+      "name": "Sign in with Paymenter for Pterodactyl 2.0",
+      "description": "A Pterodactyl 2.0 extension that adds a Sign in with Paymenter button to the panel's login page. It uses Paymenter's built-in OAuth 2.0 server with state and PKCE, matches customers by verified email and then by Paymenter account, keeps two-factor authentication and refuses root administrators unless allowed.",
+      "applicationCategory": "SecurityApplication",
+      "operatingSystem": "Linux",
+      "softwareVersion": "1.0.0",
+      "license": "https://opensource.org/licenses/MIT",
+      "offers": {"@type": "Offer", "price": "0", "priceCurrency": "USD"},
+      "downloadUrl": "https://github.com/ziroxonline111/pterodactyl-paymenter-sso/releases/latest",
+      "codeRepository": "https://github.com/ziroxonline111/pterodactyl-paymenter-sso",
+      "screenshot": "https://ziroxonline111.github.io/pterodactyl-paymenter-sso/panel-login-sign-in-with-paymenter.png",
+      "sameAs": [
+        "https://karelialabs.gumroad.com/l/paymenter-sso-pterodactyl",
+        "https://www.sourcexchange.net/products/sign-in-with-paymenter-pterodactyl-v2",
+        "https://karelialabs.com/tools/sign-in-with-paymenter"
+      ],
+      "author": {"@type": "Organization", "name": "Karelia Labs", "url": "https://karelialabs.com"}
+    },
+    {
+      "@type": "FAQPage",
+      "mainEntity": [
+        {"@type": "Question", "name": "Do I need Karelia Bridge or another Paymenter extension?",
+         "acceptedAnswer": {"@type": "Answer", "text": "No. This works with Paymenter's own OAuth clients and any way you create panel accounts (Paymenter's Pterodactyl server extension creates them with the customer's email)."}},
+        {"@type": "Question", "name": "Why does Paymenter show its Authorize page every time?",
+         "acceptedAnswer": {"@type": "Answer", "text": "Without it, a customer who had to sign in to Paymenter first would be left on Paymenter's login page (Paymenter 1.5.9 loads the next page with JavaScript, which browsers do not let follow the redirect back to the panel). One click keeps it reliable."}},
+        {"@type": "Question", "name": "Can it be used with Pterodactyl's official SSO extension?",
+         "acceptedAnswer": {"@type": "Answer", "text": "Yes, both can be installed; both sets of buttons show. This is a separate extension because the official one has no administrator protection, rate limit or activity entries for providers, and a provider would have to be copied into it after every update."}},
+        {"@type": "Question", "name": "Does it create panel accounts?",
+         "acceptedAnswer": {"@type": "Answer", "text": "No. Customers without a panel account get a clear message."}}
+      ]
+    }
+  ]
+}
+</script>
+<style>
+  :root { --bg: #0d1521; --panel: #142233; --text: #e7edf4; --muted: #94a3b8; --accent: #2dd4bf; --code: #0a111b; --border: #23364b; --on-accent: #062521; }
+  @media (prefers-color-scheme: light) {
+    :root { --bg: #f7fafc; --panel: #ffffff; --text: #0f172a; --muted: #475569; --accent: #0f766e; --code: #eef2f6; --border: #dbe3ec; --on-accent: #ffffff; }
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg); color: var(--text); font: 17px/1.6 system-ui, -apple-system, "Segoe UI", Inter, sans-serif; }
+  main { max-width: 860px; margin: 0 auto; padding: 48px 16px 80px; }
+  h1 { font-size: clamp(30px, 5vw, 46px); line-height: 1.15; margin: 8px 0 16px; }
+  h2 { margin-top: 48px; font-size: 26px; line-height: 1.25; }
+  .eyebrow { color: var(--accent); font-weight: 700; letter-spacing: .02em; }
+  .lead { font-size: 20px; color: var(--muted); }
+  pre, code { font-family: ui-monospace, "Cascadia Mono", Consolas, monospace; }
+  pre { background: var(--code); border: 1px solid var(--border); border-radius: 10px; padding: 14px 16px; overflow-x: auto; font-size: 14px; }
+  code { background: var(--code); padding: 2px 6px; border-radius: 6px; font-size: .92em; overflow-wrap: anywhere; }
+  pre code { background: none; padding: 0; overflow-wrap: normal; }
+  .buttons { display: flex; flex-wrap: wrap; gap: 12px; margin: 24px 0; }
+  .button { display: inline-block; padding: 12px 20px; border-radius: 10px; font-weight: 700; text-decoration: none; }
+  .primary { background: var(--accent); color: var(--on-accent); }
+  .secondary { border: 1px solid var(--border); color: var(--text); }
+  img { max-width: 100%; height: auto; border-radius: 12px; border: 1px solid var(--border); }
+  figure { margin: 24px 0; }
+  figcaption { color: var(--muted); font-size: 15px; margin-top: 8px; }
+  .shots { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 16px; align-items: start; }
+  .shots figure { margin: 0; }
+  .card { background: var(--panel); border: 1px solid var(--border); border-radius: 14px; padding: 20px 24px; margin: 16px 0; }
+  .card ul { padding-left: 20px; margin: 0; }
+  .table { overflow-x: auto; }
+  table { width: 100%; border-collapse: collapse; font-size: 15px; }
+  th, td { text-align: left; padding: 8px 10px; border-bottom: 1px solid var(--border); vertical-align: top; }
+  a { color: var(--accent); }
+  .small { color: var(--muted); font-size: 15px; }
+  footer { margin-top: 64px; color: var(--muted); font-size: 14px; }
+</style>
+</head>
+<body>
+<main>
+  <div class="eyebrow">Free and open source · MIT</div>
+  <h1>Sign in with Paymenter for Pterodactyl 2.0</h1>
+  <p class="lead">A <strong>Sign in with Paymenter</strong> button on your Pterodactyl 2.0 login page. Customers who bought their server in your Paymenter store click it, approve on Paymenter's page, and land in their own panel account: no second password to remember.</p>
+  <div class="buttons">
+    <a class="button primary" href="https://github.com/ziroxonline111/pterodactyl-paymenter-sso/releases/latest">Download</a>
+    <a class="button secondary" href="https://www.sourcexchange.net/products/sign-in-with-paymenter-pterodactyl-v2">Get it on SourceXchange</a>
+    <a class="button secondary" href="https://github.com/ziroxonline111/pterodactyl-paymenter-sso">Source on GitHub</a>
+  </div>
+  <p class="small">Tested with Pterodactyl 2.0.0-beta.2 and Paymenter 1.5.9. Uses Pterodactyl 2.0's official extension system. The same release zip is also on <a href="https://karelialabs.gumroad.com/l/paymenter-sso-pterodactyl">Gumroad</a>.</p>
+  <figure>
+    <img src="panel-login-sign-in-with-paymenter.png" alt="Pterodactyl 2.0 login page with a &quot;Sign in with Paymenter&quot; button below the Login button" width="1188" height="874">
+  </figure>
+
+  <h2>What it does</h2>
+  <div class="card">
+    <ul>
+      <li><strong>A "Sign in with Paymenter" button</strong> below the login form, with your own label if you like. It only appears once the extension is set up.</li>
+      <li><strong>Uses Paymenter's built-in OAuth server</strong> (Admin → OAuth Clients): no Paymenter extension to install.</li>
+      <li><strong>Finds the right account.</strong> The first time, the panel account with the same email address, only if Paymenter has verified that address. After that, the customer's Paymenter account itself, so changing the email address in Paymenter does not lock anyone out.</li>
+      <li><strong>Refuses clearly.</strong> No panel account with that address, an unverified address, or an administrator: the login page says why. It never creates accounts.</li>
+      <li><strong>Keeps two-factor authentication.</strong> Accounts with 2FA get the panel's own Device Checkpoint after Paymenter.</li>
+      <li><strong>Administrators stay on passwords</strong> unless you allow them (off by default).</li>
+      <li><strong>Back where they were going:</strong> a customer sent to the login page from a server page lands on that server.</li>
+    </ul>
+  </div>
+  <figure>
+    <img src="paymenter-authorization-request.png" alt="Paymenter's authorization page: &quot;Nordic Game Panel is requesting permission to access your account&quot;, View your profile, Cancel and Authorize" width="1440" height="360" loading="lazy">
+    <figcaption>Customers approve in your Paymenter, then land in their panel account.</figcaption>
+  </figure>
+
+  <h2>Security</h2>
+  <div class="card">
+    <ul>
+      <li>OAuth 2.0 authorization code flow with <code>state</code> (single use, 10 minutes, bound to the browser's session) and PKCE (S256).</li>
+      <li>The exact redirect URL is fixed by your panel's <code>APP_URL</code> and checked by Paymenter.</li>
+      <li>Starting a sign-in needs the panel's CSRF token; the steps share the panel's sign-in rate limit (10 per minute per IP).</li>
+      <li>The session is made by the panel's own login code: new session id, the usual activity entries, 2FA.</li>
+      <li>Every sign-in and refusal is written to the panel's activity log (<code>paymenter-sso:login</code>, <code>paymenter-sso:refused</code>).</li>
+      <li>The client secret is stored encrypted, shown only as a mask and never sent to a browser. Paymenter's access token is used once and not stored.</li>
+      <li>HTTPS to Paymenter is required (http only for localhost); requests time out after 10 seconds and do not follow redirects.</li>
+    </ul>
+  </div>
+  <div class="shots">
+    <figure>
+      <img src="panel-extension-settings.png" alt="The extension's settings dialog in the panel: Paymenter URL, client ID, stored client secret and button label" width="681" height="756" loading="lazy">
+      <figcaption>One OAuth client, a few settings; the secret stays encrypted.</figcaption>
+    </figure>
+    <figure>
+      <img src="panel-login-administrator-refused.png" alt="The panel's login page refusing a root administrator: &quot;Administrator accounts cannot sign in with Paymenter on this panel&quot;" width="1188" height="1026" loading="lazy">
+      <figcaption>Clear messages; administrators keep their passwords.</figcaption>
+    </figure>
+  </div>
+
+  <h2>Install</h2>
+  <p>Download <code>paymenter-sso-ptero2-1.0.0.zip</code> from the <a href="https://github.com/ziroxonline111/pterodactyl-paymenter-sso/releases/latest">latest release</a> and install the <code>paymenter-sso.pteroext</code> inside it on the panel server:</p>
+  <pre><code>cd /var/www/pterodactyl
+php artisan p:extension:install /path/to/paymenter-sso.pteroext --enable
+chown -R www-data:www-data extensions public/assets/extensions</code></pre>
+  <p>Use your web server's user in <code>chown</code> (in the official Docker image it is <code>nginx</code>). Then:</p>
+  <ol>
+    <li>In Paymenter: <strong>Admin → Other → OAuth Clients → New OAuth Client</strong>. Redirect: <code>https://your-panel/extensions/paymenter-sso/callback</code> (your panel's <code>APP_URL</code>). Copy the client secret and the client ID.</li>
+    <li>In the panel: <strong>Admin → Extensions → Sign in with Paymenter → Settings</strong>: Paymenter URL, client ID, client secret.</li>
+    <li>Open the login page in a private window: the button is below the <strong>Login</strong> button.</li>
+  </ol>
+
+  <h2>Compatibility</h2>
+  <div class="table">
+    <table>
+      <tr><th>Panel</th><td>Pterodactyl 2.0, tested with 2.0.0-beta.2 (PHP 8.4). Does not run on Pterodactyl 1.x.</td></tr>
+      <tr><th>Paymenter</th><td>Paymenter 1.x with its OAuth clients, tested with 1.5.9</td></tr>
+      <tr><th>Network</th><td>Paymenter reachable from the panel server at the same address customers use, over HTTPS (http only on localhost). Different domains are fine.</td></tr>
+      <tr><th>Email</th><td>Matching by email needs verified addresses in Paymenter (its verification email, or an admin's "Email Verified" switch)</td></tr>
+    </table>
+  </div>
+
+  <h2>Troubleshooting</h2>
+  <div class="table">
+    <table>
+      <tr><th>What you see</th><th>What to do</th></tr>
+      <tr><td>No button on the login page</td><td>All three of Paymenter URL, client ID and client secret must be saved, and the URL must be valid.</td></tr>
+      <tr><td><code>invalid_client</code> on Paymenter</td><td>The client ID is wrong, or the client's redirect URL is not exactly the one in the extension's settings (it must match <code>APP_URL</code>).</td></tr>
+      <tr><td><em>The email address of your Paymenter account is not verified yet</em></td><td>The customer opens the link in Paymenter's verification email, or an admin switches on Email Verified on the user.</td></tr>
+      <tr><td><em>No panel account uses the email address of your Paymenter account</em></td><td>The panel account has another address, or does not exist yet.</td></tr>
+    </table>
+  </div>
+  <p>Every setting, how customers are matched, all messages and uninstalling: <a href="https://github.com/ziroxonline111/pterodactyl-paymenter-sso#readme">README on GitHub</a>.</p>
+
+  <h2>Want one-click access from Paymenter and billing in the panel?</h2>
+  <p><strong>Karelia Bridge</strong> is the paid add-on for Paymenter and Pterodactyl 2.0. Customers click <em>Open control panel</em> in Paymenter and land on their server, signed in. Every server gets a Billing page with the next due date, the price and unpaid invoices, and a banner before payment is due. The two work side by side: install both for the login button and the one-click links.</p>
+  <div class="buttons"><a class="button secondary" href="https://karelialabs.gumroad.com/l/karelia-bridge">Get Karelia Bridge ($24.99)</a><a class="button secondary" href="https://karelialabs.com/tools/karelia-bridge">About Karelia Bridge</a></div>
+
+  <h2>FAQ</h2>
+  <div class="card">
+    <p><strong>Do I need Karelia Bridge or another Paymenter extension?</strong><br>No. This works with Paymenter's own OAuth clients and any way you create panel accounts (Paymenter's Pterodactyl server extension creates them with the customer's email).</p>
+    <p><strong>Why does Paymenter show its Authorize page every time?</strong><br>Without it, a customer who had to sign in to Paymenter first would be left on Paymenter's login page (Paymenter 1.5.9 loads the next page with JavaScript, which browsers do not let follow the redirect back to the panel). One click keeps it reliable.</p>
+    <p><strong>Can it be used with Pterodactyl's official SSO extension?</strong><br>Yes, both can be installed; both sets of buttons show. This is a separate extension because the official one has no administrator protection, rate limit or activity entries for providers, and a provider would have to be copied into it after every update.</p>
+    <p><strong>Does it create panel accounts?</strong><br>No. Customers without a panel account get a clear message.</p>
+  </div>
+
+  <p>More about Sign in with Paymenter: <a href="https://karelialabs.com/tools/sign-in-with-paymenter">karelialabs.com</a>. More tools from the same team: <a href="https://karelialabs.com/tools">karelialabs.com/tools</a>.</p>
+
+  <footer>© 2026 <a href="https://karelialabs.com">Karelia Labs</a> · MIT License · Not affiliated with Pterodactyl or Paymenter.</footer>
+</main>
+</body>
+</html>
